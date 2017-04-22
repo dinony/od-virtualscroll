@@ -30,7 +30,7 @@ npm i -S od-virtualscroll
 
 ## Examples
 
-All examples are written in Angular 4 and provided in separate repositories to keep the lib simple.
+All examples are written in Angular 4 and provided in separate repositories to keep this repository simple.
 
 However, this repository also holds a minimalistic demo, to allow local development and AoT compilation.
 
