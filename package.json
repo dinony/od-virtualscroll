@@ -1,0 +1,96 @@
+{
+  "name": "od-virtualscroll",
+  "version": "0.2.0",
+  "description": "Observable-based virtual scroll implementation in Angular",
+  "homepage": "https://dinony.github.io/od-vsstatic/",
+  "main": "dist/bundles/od-virtualscroll.umd.js",
+  "typings": "dist/fesm15/od-virtualscroll.d.ts",
+  "module": "dist/fesm5/od-virtualscroll.js",
+  "es2015": "dist/fesm15/od-virtualscroll.js",
+  "scripts": {
+    "build:es5": "ngc -p config/tsconfig.es5.json && npm run build:fesm5",
+    "build:fesm5": "rollup dist/es5/od-virtualscroll.js -o dist/fesm5/od-virtualscroll.js && cpx 'dist/es5/*.d.ts' 'dist/fesm5' && cpx 'dist/es5/*.metadata.json' 'dist/fesm5'",
+    "build:es2015": "ngc -p config/tsconfig.es2015.json && npm run build:fesm15",
+    "build:fesm15": "rollup dist/es2015/od-virtualscroll.js -o dist/fesm15/od-virtualscroll.js && cpx 'dist/es2015/*.d.ts' 'dist/fesm15' && cpx 'dist/es2015/*.metadata.json' 'dist/fesm15'",
+    "build:bundle": "rollup -c config/rollup.config.js",
+    "build": "npm run build:es5 && npm run build:es2015 && npm run build:bundle",
+    "buildDemo:es2015": "cpx config/tsconfig-demo.es2015.json ./ && ngc -p tsconfig-demo.es2015.json && del-cli ./tsconfig-demo.es2015.json",
+    "buildDemo:bundle": "rollup -c config/rollup-demo.config.js",
+    "buildDemo": "npm run buildDemo:es2015 && npm run buildDemo:bundle && rimraf buildTmp",
+    "buildAll": "npm run build && npm run buildDemo",
+    "cleanAll": "rimraf dist && rimraf build && rimraf buildTmp",
+    "serve": "node tools/browserSync.js",
+    "tslint": "tslint -c tslint.json -p tsconfig.json -t stylish",
+    "explore": "source-map-explorer build/build.gen.js"
+  },
+  "keywords": [
+    "angular",
+    "angular4",
+    "angular 4",
+    "rxjs",
+    "observable",
+    "scroll",
+    "scroll component",
+    "scrolling",
+    "virtual scroll",
+    "virtual scrolling",
+    "infinite scroll",
+    "infinite scrolling",
+    "efficient scroll",
+    "efficient scrolling",
+    "tiles",
+    "tiling",
+    "tile view"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dinony/od-virtualscroll.git"
+  },
+  "bugs": {
+    "url": "https://github.com/dinony/od-virtualscroll/issues"
+  },
+  "author": "Onur Dogangönül <onur.dogangoenuel@gmail.com>",
+  "maintainers": [
+    {
+      "name": "Onur Dogangönül",
+      "email": "onur.dogangoenuel@gmail.com"
+    }
+  ],
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "peerDependencies": {
+    "@angular/core": "^4.0.1",
+    "@angular/common": "^4.0.1",
+    "core-js": "^2.4.1",
+    "rxjs": "^5.0.1",
+    "zone.js": "^0.8.4"
+  },
+  "devDependencies": {
+    "@angular/common": "^4.0.1",
+    "@angular/compiler": "^4.0.1",
+    "@angular/compiler-cli": "^4.0.1",
+    "@angular/core": "^4.0.2",
+    "@angular/platform-browser": "^4.0.2",
+    "@angular/platform-browser-dynamic": "^4.0.2",
+    "browser-sync": "^2.18.8",
+    "core-js": "^2.4.1",
+    "cpx": "^1.5.0",
+    "del-cli": "^0.2.1",
+    "plugin-typescript": "^5.3.1",
+    "reflect-metadata": "^0.1.9",
+    "rimraf": "^2.6.1",
+    "rollup": "^0.41.6",
+    "rollup-plugin-commonjs": "^8.0.2",
+    "rollup-plugin-node-resolve": "^3.0.0",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rxjs": "^5.0.1",
+    "source-map-explorer": "^1.3.3",
+    "systemjs": "^0.19.47",
+    "tslint": "^5.1.0",
+    "typescript": "^2.1.5",
+    "uglify-js-harmony": "^2.7.5",
+    "zone.js": "^0.8.4"
+  }
+}
