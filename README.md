@@ -160,7 +160,7 @@ E.g.: The [od-vsdynamic](https://github.com/dinony/od-vsdynamic) example.
 
 ### Further information
 
-[api.ts](https://github.com/dinony/od-vsvirtualscroll/blob/master/src/api.ts) reveals the current API surface.
+[api.ts](https://github.com/dinony/od-virtualscroll/blob/master/src/api.ts) reveals the current API surface.
 
 ## Module Format
 
