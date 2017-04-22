@@ -19,7 +19,7 @@ npm i -S od-virtualscroll
 - Advanced API that allows you to subscribe to key component observables
 - Set scroll position
 - Customizable equality checking (needed to identify cells)
-- Supports ahead-of-time compilation and tree shacking
+- Supports ahead-of-time compilation and tree shaking
 - A lot of code samples
 - Ships with FESM5 and FESM15
 - Also ships ES5/UMD, ES5/ES2015 and E2015/ES2015 exports (`{{target}}/{{module}}`)
