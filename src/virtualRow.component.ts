@@ -8,7 +8,7 @@ import {ScrollItem} from './scrollItem';
 
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
-  selector: 'od-virtual-row',
+  selector: 'od-virtualrow',
   styles: [`:host { display: block; position: absolute; }`],
   template: `<div #viewRef></div>`
 })
