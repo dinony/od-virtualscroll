@@ -11,10 +11,10 @@ npm i -S od-virtualscroll
 ## Features
 
 - Efficient virtual scrolling / infinite scrolling
-- Optimal updates on resize / scroll
+- Supports resizing
+- Optimal updates
 - Request a fixed cell size - adjusts number of cells per row
 - Request a certain number of cells per row - adjusts cell width
-- Supports resizing
 - Debounce scrolling / resizing
 - Advanced API that allows you to subscribe to key component observables
 - Set scroll position
