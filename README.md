@@ -35,8 +35,8 @@ All examples are written in Angular 4 and provided in separate repositories to k
 | Name           | Description
 |----------------|-------------------------------------
 | [od-vsstatic](https://github.com/dinony/od-vsstatic) / [Demo](https://dinony.github.io/od-vsstatic/)     | Static example with 10k cells. Ideal for performance analysis and GC testing
-| [od-vsdynamic](https://github.com/dinony/od-vsdynamic) / [Demo](https://dinony.github.io/od-vsdynamic/)  | Scroll through GIFs, without the risk of melting your CPU. ([GIPHY API](https://api.giphy.com/))
-| [od-vslist](https://github.com/dinony/od-vslist) / [Demo](https://dinony.github.io/od-vslist/)     | Render only 1 cell per row with dynamic width. ([randomuser API](https://randomuser.me/documentation))
+| [od-vsdynamic](https://github.com/dinony/od-vsdynamic) / [Demo](https://dinony.github.io/od-vsdynamic/)  | Scroll through GIFs, without the risk of melting your CPU ([GIPHY API](https://api.giphy.com/))
+| [od-vslist](https://github.com/dinony/od-vslist) / [Demo](https://dinony.github.io/od-vslist/)     | Render only 1 cell per row with dynamic width ([randomuser API](https://randomuser.me/documentation))
 | [od-vsadvanced](https://github.com/dinony/od-vsadvanced) / [Demo](https://dinony.github.io/od-vsadvanced/) | Shows more advanced API features and utilizes the auxiliary debug module
 | [od-vscolors](https://github.com/dinony/od-vscolors) / [Demo](https://dinony.github.io/od-vscolors/)   | Just for fun
 
