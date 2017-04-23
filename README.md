@@ -1,6 +1,6 @@
 # od-virtualscroll
 
-Observable-based virtual scroll implementation in Angular
+Observable-based virtual scroll implementation in Angular.
 
 ## Installation
 
