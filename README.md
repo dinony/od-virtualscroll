@@ -26,10 +26,6 @@ npm i -S od-virtualscroll
 
 ## Demo
 
-[od-vsstatic](https://github.com/dinony/od-vsstatic) / [Demo](https://dinony.github.io/od-vsstatic/)
-
-## Examples
-
 All examples are written in Angular 4 and provided in separate repositories to keep this repository simple.
 
 | Name           | Description
