@@ -94,8 +94,8 @@ If you want to apply a traditional layout and wonder about the space between inl
 |------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------------
 | vsData           | `Observable<any[]>`                               | Stream of data 
 | vsOptions        | `Observable<IVirtualScrollOptions>`               | Stream of options
-| vsResize         | `Observable<any>`                                 | Stream of resize commands (optional, default: `-|->`)
-| vsScrollTop      | `Observable<SetScrollTopCmd>`                     | Stream of set scroll top commands (optional, default: `-|->`)
+| vsResize         | `Observable<any>`                                 | Stream of resize commands (optional, default: `-\->`)
+| vsScrollTop      | `Observable<SetScrollTopCmd>`                     | Stream of set scroll top commands (optional, default: `-\->`)
 | vsDebounceTime   | `number`                                          | Debounce scroll and resize events [ms] (optional, default: 0)
 | vsEqualsFunc     | `(prevIndex: number, curIndex:number) => boolean` | Function to determine equality, given two indicies in the array (optional, default: `(p,c) => p === c)`)
 
