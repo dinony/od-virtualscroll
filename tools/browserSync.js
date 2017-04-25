@@ -7,7 +7,7 @@ browserSync({
   reloadDelay: 200,
   reloadDebounce: 500,
   files: [
-    'demo/*.ts', 'demo/*.html',
+    'demo/src/*.ts', 'demo/*.html',
     'src/*.ts', 
     'systemjs.config.js'
   ],
