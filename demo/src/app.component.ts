@@ -22,7 +22,7 @@ import {IVirtualScrollOptions} from '../../src/api';
     .inner-container {
       display: flex;
       flex-direction: column;
-      height: 96%;
+      height: 90vh;
       width: 92%;
     }
 
