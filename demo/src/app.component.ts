@@ -37,6 +37,7 @@ import {IVirtualScrollOptions} from '../../src/api';
       border: 4px dashed pink;
       flex: 1;
       overflow: hidden;
+      height: 100%;
     }
 
     a {
@@ -48,10 +49,6 @@ import {IVirtualScrollOptions} from '../../src/api';
     @media only screen and (max-width : 447px) {
       .header {
         display: none;
-      }
-
-      .border-wrapper {
-        height: 99%;
       }
     }
 
