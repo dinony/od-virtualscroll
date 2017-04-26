@@ -1,4 +1,4 @@
-# od-virtualscroll
+# od-virtualscroll [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dinony/od-virtualscroll/master/LICENSE)
 
 Observable-based virtual scroll implementation in Angular.
 
