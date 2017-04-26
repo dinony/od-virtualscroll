@@ -39,6 +39,22 @@ SystemJS.config({
   },
   transpiler: 'ts',
   typescriptOptions: {
-    tsconfig: '../../../tsconfig.json'
+    "target": "es5",
+    "module": "es2015",
+    "moduleResolution": "node",
+    "lib": ["es2015", "dom"],
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "declaration": true,
+    "removeComments": false,
+    "strictNullChecks": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "stripInternal": true,
+    "alwaysStrict": true,
+    "noUnusedParameters": false,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "suppressImplicitAnyIndexErrors": true
   }
 });
