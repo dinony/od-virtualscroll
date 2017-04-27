@@ -1,6 +1,6 @@
 {
   "name": "od-virtualscroll",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Observable-based virtual scroll implementation in Angular",
   "homepage": "https://dinony.github.io/od-vsstatic/",
   "main": "dist/bundles/od-virtualscroll.umd.js",
