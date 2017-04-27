@@ -12,20 +12,26 @@ npm i -S od-virtualscroll
 
 ## Features
 
-- Efficient virtual scrolling / infinite scrolling
-- Supports resizing
-- Optimal updates
-- Request a fixed cell size - adjusts number of cells per row
-- Request a certain number of cells per row - adjusts cell width
-- Debounce scrolling / resizing
-- Advanced API that allows you to subscribe to key component observables
-- Set scroll position
-- Customizable equality checking (needed to identify cells)
-- Supports ahead-of-time compilation and tree shaking
-- A lot of code samples
-- Ships with FESM5 and FESM15
-- Also ships ES5/UMD, ES5/ES2015 and E2015/ES2015 exports (`{{target}}/{{module}}`)
-
+- Handles resizing
+- Efficient
+  - Displays necessary amount of rows
+  - Optimal updates on data change or resize 
+- Supports tiling
+- Supports fixed number of columns
+- Reactive component
+  - Observable interface for most parts
+- Supports AoT
+- API
+  - Subscribe to key component observables
+- Plus
+  - Debounce scrolling / resizing
+  - Set scroll position
+  - Customizable equality checking
+  - A lot of code samples
+- Module formats
+  - Ships FESM5 and FESM15
+  - Ships ES5/UMD, ES5/ES2015 and E2015/ES2015 exports (`{{target}}/{{module}}`)
+  
 ## Demo
 
 All examples are written in Angular 4 and provided in separate repositories to keep this repository simple.
