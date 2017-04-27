@@ -52,7 +52,7 @@ import {IVirtualScrollOptions} from '../../src/api';
       }
     }
 
-    .tile {
+    .cell {
       align-items: center;
       border: 4px #b3eaff solid;
       box-sizing: border-box;
@@ -64,7 +64,7 @@ import {IVirtualScrollOptions} from '../../src/api';
       width: 200px;
     }
 
-    .tile-info {
+    .cell-info {
       font-size: 10px;
       position: absolute;
       right: 5px;
@@ -86,8 +86,8 @@ import {IVirtualScrollOptions} from '../../src/api';
         <div class="border-wrapper">
           <od-virtualscroll [vsData]="data$" [vsOptions]="options$">
             <ng-template let-item let-row="row" let-column="column">
-              <div class="tile">
-                <div class="tile-info">
+              <div class="cell">
+                <div class="cell-info">
                   <span>Row: {{row}}</span><br>
                   <span>Column: {{column}}</span>
                 </div>
