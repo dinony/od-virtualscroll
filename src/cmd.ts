@@ -8,8 +8,7 @@ export enum CmdOption {
   RemoveRow,
   CreateItem,
   UpdateItem,
-  RemoveItem,
-  SetScrollTop
+  RemoveItem
 }
 
 export interface ICmd {
@@ -78,9 +77,4 @@ export class RemoveItemCmd implements ItemRenderCmd {
     public actualIndex: number,
     public columnIndex: number,
     public dataIndex: number) {}
-}
-
-export class SetScrollTopCmd implements ICmd {
-  cmdType = CmdOption.SetScrollTop;
-  constructor(public value: number) {}
 }
