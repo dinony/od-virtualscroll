@@ -1,9 +1,9 @@
-
+/* tslint:disable:max-classes-per-file */
 export enum UserCmdOption {
   SetScrollTop,
   FocusRow,
   FocusItem
-};
+}
 
 export interface IUserCmd {
   cmdType: UserCmdOption;

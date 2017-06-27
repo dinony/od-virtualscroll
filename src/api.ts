@@ -18,5 +18,5 @@ export {
 
 export {
   FocusItemCmd, FocusRowCmd, IUserCmd,
-  SetScrollTopCmd, UserCmdOption 
+  SetScrollTopCmd, UserCmdOption
 } from './userCmd';
