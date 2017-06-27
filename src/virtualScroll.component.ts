@@ -71,7 +71,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
   @Input() vsData: Observable<any[]> = Observable.empty();
   @Input() vsOptions: Observable<IVirtualScrollOptions> = Observable.empty();
   @Input() vsResize: Observable<any> = Observable.empty();
-  @Input() vsScrollTop: Observable<SetScrollTopCmd> = Observable.empty();
+  @Input() vsUserCmd: Observable<IUserCmd> = Observable.empty();
   @Input() vsDebounceTime: number = 0;
   @Input() vsEqualsFunc: (prevIndex: number, curIndex: number) => boolean = (prevIndex, curIndex) => prevIndex === curIndex;
 
