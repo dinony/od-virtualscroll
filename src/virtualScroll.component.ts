@@ -42,7 +42,10 @@ import {calcMeasure, calcScrollWindow, getMaxIndex} from './measurement';
 import {ScrollItem} from './scrollItem';
 import {ScrollObservableService} from './service';
 import {difference, intersection, isEmpty} from './set';
-import {IUserCmd, SetScrollTopCmd, UserCmdOption} from './userCmd';
+import {
+  FocusItemCmd, FocusRowCmd, IUserCmd,
+  SetScrollTopCmd, UserCmdOption
+} from './userCmd';
 import {VirtualRowComponent} from './virtualRow.component';
 
 @Component({
@@ -334,12 +337,18 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
     const focusRowSetScrollTop$ = userCmd$
       .filter(cmd => cmd.cmdType === UserCmdOption.FocusRow)
       .withLatestFrom(scrollWin$)
-      .map(([cmd, scrollWin]) => (new SetScrollTopCmd(cmd.rowIndex * scrollWin.itemHeight)));
+      .map(([cmd, scrollWin]) => {
+        const focusRow = cmd as FocusRowCmd;
+        return new SetScrollTopCmd(focusRow.rowIndex * scrollWin.itemHeight);
+      });
 
     const focusItemSetScrollTop$ = userCmd$
       .filter(cmd => cmd.cmdType === UserCmdOption.FocusItem)
       .withLatestFrom(scrollWin$)
-      .map(([cmd, scrollWin]) => (new SetScrollTopCmd(Math.floor(cmd.itemIndex / scrollWin.numActualColumns) * scrollWin.itemHeight)));
+      .map(([cmd, scrollWin]) => {
+        const focusItem = cmd as FocusItemCmd;
+        return new SetScrollTopCmd(Math.floor(focusItem.itemIndex / scrollWin.numActualColumns) * scrollWin.itemHeight);
+      });
 
     const setScrollTopFunc$ = Observable.merge(userSetScrollTop$, focusRowSetScrollTop$, focusItemSetScrollTop$)
       .map((cmd: SetScrollTopCmd) => (state: IVirtualScrollState) => {
