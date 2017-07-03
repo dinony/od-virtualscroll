@@ -2,3 +2,4 @@ node_modules
 build
 buildTmp
 dist
+npm-debug.log
