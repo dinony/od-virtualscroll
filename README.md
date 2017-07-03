@@ -207,6 +207,12 @@ See [Angular Package Format v4.0](https://docs.google.com/document/d/1CZC2rcpxff
 
 ES5/UMD, ES5/ES2015 and ES2015/ES2015 exports are also provided.
 
+## Upgrade
+
+### 0.2.x -> 1.x
+
+Rename component input `vsScrollTop` to `vsUserCmd`.
+
 ## NPM Scripts
 
 ```
