@@ -12,6 +12,8 @@ npm i -S od-virtualscroll
 
 ## Features
 
+Let's you scroll efficiently through an humongous list/grid of items (with single predefined height) by recycling components and minimizing component updates. 
+
 - Handles resizing
 - Efficient
   - Displays necessary amount of rows
