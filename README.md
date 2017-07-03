@@ -1,6 +1,6 @@
-# od-virtualscroll 
+# od-virtualscroll
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dinony/od-virtualscroll/master/LICENSE) [![Module format](https://img.shields.io/badge/module%20formats-umd%2Fes2015%2Ffesm5%2Ffesm15-blue.svg)](https://github.com/dinony/od-virtualscroll#module-format) [![Module format](https://img.shields.io/badge/supports-AoT-red.svg)](https://github.com/dinony/od-virtualscroll#module-format) 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dinony/od-virtualscroll/master/LICENSE) [![Module format](https://img.shields.io/badge/module%20formats-umd%2Fes2015%2Ffesm5%2Ffesm15-blue.svg)](https://github.com/dinony/od-virtualscroll#module-format) [![Module format](https://img.shields.io/badge/supports-AoT-red.svg)](https://github.com/dinony/od-virtualscroll#module-format)
 
 > Observable-based virtual scroll implementation in Angular.
 
@@ -12,12 +12,12 @@ npm i -S od-virtualscroll
 
 ## Features
 
-Let's you scroll efficiently through an humongous list/grid of items (with single predefined height) by recycling components and minimizing component updates. 
+Let's you scroll efficiently through an humongous list/grid of items (with single predefined height) by recycling components and minimizing component updates.
 
 - Handles resizing
 - Efficient
   - Displays necessary amount of rows
-  - Optimal updates on data change or resize 
+  - Optimal updates on data change or resize
 - Supports tiling
 - Supports fixed number of columns
 - Reactive component
@@ -33,7 +33,7 @@ Let's you scroll efficiently through an humongous list/grid of items (with singl
 - Module formats
   - Ships FESM5 and FESM15
   - Ships ES5/UMD, ES5/ES2015 and E2015/ES2015 exports (`{{target}}/{{module}}`)
-  
+
 ## Demo
 
 All examples are written in Angular 4 and provided in separate repositories to keep this repository simple.
@@ -50,7 +50,7 @@ However, this repository also holds a minimalistic demo, to allow local developm
 
 ## Usage
 
-Import the module and specify the cell and container styling (traditional layout or flexbox/... your choice). 
+Import the module and specify the cell and container styling (traditional layout or flexbox/... your choice).
 
 ```typescript
 // app.module.ts
@@ -98,7 +98,7 @@ If you want to apply a traditional layout and wonder about the space between inl
 
 | Name             | Type                                              | Description
 |------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------------
-| vsData           | `Observable<any[]>`                               | Stream of data 
+| vsData           | `Observable<any[]>`                               | Stream of data
 | vsOptions        | `Observable<IVirtualScrollOptions>`               | Stream of options
 | vsResize         | `Observable<any>`                                 | Stream of resize commands (optional, default: `-\->`)
 | vsUserCmd        | `Observable<IUserCmd>`                            | Stream of user specific commands (optional, default: `-\->`)
@@ -160,7 +160,7 @@ The [od-vsdynamic](https://github.com/dinony/od-vsdynamic) and [od-vsadvanced](h
 
 ### IVirtualScrollWindow
 
-This interface provides pretty much all needed information. 
+This interface provides pretty much all needed information.
 
 ```typescript
 export interface IVirtualScrollWindow {
@@ -186,6 +186,14 @@ export interface IVirtualScrollWindow {
 It is used internally and may also be useful in consuming application components.
 
 E.g.: The [od-vsdynamic](https://github.com/dinony/od-vsdynamic) example.
+
+### Multiple Instances
+
+The `ScrollObservableService` is registered on the VirtualScrollModule by default, so it is available on the root injector.
+However, if you have multiple instances of the scroll component, a singleton instance of the `ScrollObservableService` is not enough.
+Register the service on the wrapping component, via the providers property in the `@Component` decorator, so that the injector bubbling will stop on the Component level and will serve the right instance of the ScrollObservableService.
+
+Check the [feature/testMultiInstances](https://github.com/dinony/od-virtualscroll/tree/feature/testMultiInstances) branch for a simple example.
 
 ### Further information
 
