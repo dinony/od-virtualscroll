@@ -27,7 +27,7 @@ Let's you scroll efficiently through an humongous list/grid of items (with singl
   - Subscribe to key component observables
 - Plus
   - Debounce scrolling / resizing
-  - Set scroll position
+  - Set scroll position, focus row or item via index
   - Customizable equality checking
   - A lot of code samples
 - Module formats
@@ -101,7 +101,7 @@ If you want to apply a traditional layout and wonder about the space between inl
 | vsData           | `Observable<any[]>`                               | Stream of data 
 | vsOptions        | `Observable<IVirtualScrollOptions>`               | Stream of options
 | vsResize         | `Observable<any>`                                 | Stream of resize commands (optional, default: `-\->`)
-| vsScrollTop      | `Observable<SetScrollTopCmd>`                     | Stream of set scroll top commands (optional, default: `-\->`)
+| vsUserCmd        | `Observable<IUserCmd>`                            | Stream of user specific commands (optional, default: `-\->`)
 | vsDebounceTime   | `number`                                          | Debounce scroll and resize events [ms] (optional, default: 0)
 | vsEqualsFunc     | `(prevIndex: number, curIndex:number) => boolean` | Function to determine equality, given two indicies in the array (optional, default: `(p,c) => p === c)`)
 
@@ -119,6 +119,27 @@ export interface IVirtualScrollOptions {
 The component requires either fixed-size cells (itemWidth, itemHeight) or a fixed number of cells per row (itemHeight, numLimitColumns).
 
 Further, to improve scrolling, additional rows may be requested.
+
+### IUserCmd
+
+Currently, the supported user specific commands are:
+
+* `SetScrollTopCmd`: Set scroll top to specific value
+* `FocusRowCmd`: Focus specific row index
+* `FocusItemCmd`: Focus specific item index
+
+E.g. Focus row index 42.
+
+```typescript
+data$ = // Data...;
+userCmd$ = Observable.of(new FocusRowCmd(42)).delay(2000);
+```
+
+```html
+<od-virtualscroll [vsData]="data$" [vsUserCmd]="userCmd$">
+  <!-- Your template -->
+</od-virtualscroll>
+```
 
 ## API
 
