@@ -1,6 +1,7 @@
 SystemJS.config({
   paths: {
-    'npm:': '../node_modules/'
+    'npm:': '../node_modules/',
+    //'npm:': 'https://unpkg.com/'
   },
   map: {
     ts: 'npm:plugin-typescript/lib',
@@ -27,11 +28,11 @@ SystemJS.config({
     src: {
       main: 'main.ts',
       defaultExtension: 'ts',
-      meta: {'*.ts': {loader:'ts'}}  
+      meta: {'*.ts': {loader:'ts'}}
     },
     '../../src': {
       defaultExtension: 'ts',
-      meta: {'*.ts': {loader:'ts'}}  
+      meta: {'*.ts': {loader:'ts'}}
     },
     rxjs: {
       defaultExtension: 'js'

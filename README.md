@@ -1,6 +1,6 @@
-# od-virtualscroll 
+# od-virtualscroll
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dinony/od-virtualscroll/master/LICENSE) [![Module format](https://img.shields.io/badge/module%20formats-umd%2Fes2015%2Ffesm5%2Ffesm15-blue.svg)](https://github.com/dinony/od-virtualscroll#module-format) [![Module format](https://img.shields.io/badge/supports-AoT-red.svg)](https://github.com/dinony/od-virtualscroll#module-format) 
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/dinony/od-virtualscroll/master/LICENSE) [![Module format](https://img.shields.io/badge/module%20formats-umd%2Fes2015%2Ffesm5%2Ffesm15-blue.svg)](https://github.com/dinony/od-virtualscroll#module-format) [![Module format](https://img.shields.io/badge/supports-AoT-red.svg)](https://github.com/dinony/od-virtualscroll#module-format)
 
 > Observable-based virtual scroll implementation in Angular.
 
@@ -12,10 +12,12 @@ npm i -S od-virtualscroll
 
 ## Features
 
+Let's you scroll efficiently through a humongous list/grid of items (with single predefined height) by recycling components and minimizing component updates.
+
 - Handles resizing
 - Efficient
   - Displays necessary amount of rows
-  - Optimal updates on data change or resize 
+  - Optimal updates on data change or resize
 - Supports tiling
 - Supports fixed number of columns
 - Reactive component
@@ -25,13 +27,13 @@ npm i -S od-virtualscroll
   - Subscribe to key component observables
 - Plus
   - Debounce scrolling / resizing
-  - Set scroll position
+  - Set scroll position, focus row or item via index
   - Customizable equality checking
   - A lot of code samples
 - Module formats
   - Ships FESM5 and FESM15
   - Ships ES5/UMD, ES5/ES2015 and E2015/ES2015 exports (`{{target}}/{{module}}`)
-  
+
 ## Demo
 
 All examples are written in Angular 4 and provided in separate repositories to keep this repository simple.
@@ -48,7 +50,7 @@ However, this repository also holds a minimalistic demo, to allow local developm
 
 ## Usage
 
-Import the module and specify the cell and container styling (traditional layout or flexbox/... your choice). 
+Import the module and specify the cell and container styling (traditional layout or flexbox/... your choice).
 
 ```typescript
 // app.module.ts
@@ -96,10 +98,10 @@ If you want to apply a traditional layout and wonder about the space between inl
 
 | Name             | Type                                              | Description
 |------------------|---------------------------------------------------|-------------------------------------------------------------------------------------------------------
-| vsData           | `Observable<any[]>`                               | Stream of data 
+| vsData           | `Observable<any[]>`                               | Stream of data
 | vsOptions        | `Observable<IVirtualScrollOptions>`               | Stream of options
 | vsResize         | `Observable<any>`                                 | Stream of resize commands (optional, default: `-\->`)
-| vsScrollTop      | `Observable<SetScrollTopCmd>`                     | Stream of set scroll top commands (optional, default: `-\->`)
+| vsUserCmd        | `Observable<IUserCmd>`                            | Stream of user specific commands (optional, default: `-\->`)
 | vsDebounceTime   | `number`                                          | Debounce scroll and resize events [ms] (optional, default: 0)
 | vsEqualsFunc     | `(prevIndex: number, curIndex:number) => boolean` | Function to determine equality, given two indicies in the array (optional, default: `(p,c) => p === c)`)
 
@@ -117,6 +119,27 @@ export interface IVirtualScrollOptions {
 The component requires either fixed-size cells (itemWidth, itemHeight) or a fixed number of cells per row (itemHeight, numLimitColumns).
 
 Further, to improve scrolling, additional rows may be requested.
+
+### IUserCmd
+
+Currently, the supported user specific commands are:
+
+* `SetScrollTopCmd`: Set scroll top to specific value
+* `FocusRowCmd`: Focus specific row index
+* `FocusItemCmd`: Focus specific item index
+
+E.g. Focus row index 42.
+
+```typescript
+data$ = // Data...;
+userCmd$ = Observable.of(new FocusRowCmd(42)).delay(2000);
+```
+
+```html
+<od-virtualscroll [vsData]="data$" [vsUserCmd]="userCmd$">
+  <!-- Your template -->
+</od-virtualscroll>
+```
 
 ## API
 
@@ -137,7 +160,7 @@ The [od-vsdynamic](https://github.com/dinony/od-vsdynamic) and [od-vsadvanced](h
 
 ### IVirtualScrollWindow
 
-This interface provides pretty much all needed information. 
+This interface provides pretty much all needed information.
 
 ```typescript
 export interface IVirtualScrollWindow {
@@ -164,6 +187,14 @@ It is used internally and may also be useful in consuming application components
 
 E.g.: The [od-vsdynamic](https://github.com/dinony/od-vsdynamic) example.
 
+### Multiple Instances
+
+The `ScrollObservableService` is registered on the VirtualScrollModule by default, so it is available on the root injector.
+However, if you have multiple instances of the scroll component, a singleton instance of the `ScrollObservableService` is not enough.
+Register the service on the wrapping component, via the providers property in the `@Component` decorator, so that the injector bubbling will stop on the Component level and will serve the right instance of the ScrollObservableService.
+
+Check the [feature/testMultiInstances](https://github.com/dinony/od-virtualscroll/tree/feature/testMultiInstances) branch for a simple example.
+
 ### Further information
 
 [api.ts](https://github.com/dinony/od-virtualscroll/blob/master/src/api.ts) reveals the current API surface.
@@ -175,6 +206,12 @@ The lib is AoT compatible and ships with FESM5 and FESM15 exports.
 See [Angular Package Format v4.0](https://docs.google.com/document/d/1CZC2rcpxffTDfRDs6p1cfbmKNLA6x5O-NtkJglDaBVs/preview) for more info.
 
 ES5/UMD, ES5/ES2015 and ES2015/ES2015 exports are also provided.
+
+## Upgrade
+
+### 0.2.x -> 1.x
+
+Rename component input `vsScrollTop` to `vsUserCmd`.
 
 ## NPM Scripts
 

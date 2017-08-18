@@ -9,9 +9,9 @@ export function calcMeasure(rect: IVirtualScrollContainer, options: IVirtualScro
     containerWidth: rect.width,
     itemHeight: options.itemHeight,
     itemWidth: options.itemWidth,
-    numPossibleRows,
     numPossibleColumns,
     numPossibleItems: numPossibleRows * numPossibleColumns,
+    numPossibleRows,
   };
 }
 
@@ -40,10 +40,10 @@ export function calcScrollWindow(scrollTop: number, measure: IVirtualScrollMeasu
     dataTimestamp,
     itemHeight: measure.itemHeight,
     itemWidth: measure.itemWidth,
-    numAdditionalRows,
-    numActualRows,
     numActualColumns,
     numActualItems: Math.min(numActualRows * numActualColumns, numVirtualItems),
+    numActualRows,
+    numAdditionalRows,
     numVirtualItems,
     numVirtualRows,
     scrollPercentage: clamp(0, 100, scrollTop / (virtualHeight - measure.containerHeight)),

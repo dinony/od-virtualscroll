@@ -21,7 +21,6 @@ import 'rxjs/add/observable/of';
 import 'rxjs/add/operator/concatMap';
 import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/do';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/pairwise';
@@ -36,13 +35,17 @@ import {IVirtualScrollMeasurement, IVirtualScrollWindow} from './basic';
 import {
   CmdOption, CreateItemCmd, CreateRowCmd,
   NoopCmd,  RemoveItemCmd, RemoveRowCmd,
-  SetScrollTopCmd, ShiftRowCmd, UpdateItemCmd
+  ShiftRowCmd, UpdateItemCmd
 } from './cmd';
 import {forColumnsIn, forColumnsInWithPrev, forRowsIn} from './enumerate';
 import {calcMeasure, calcScrollWindow, getMaxIndex} from './measurement';
 import {ScrollItem} from './scrollItem';
 import {ScrollObservableService} from './service';
 import {difference, intersection, isEmpty} from './set';
+import {
+  FocusItemCmd, FocusRowCmd, IUserCmd,
+  SetScrollTopCmd, UserCmdOption
+} from './userCmd';
 import {VirtualRowComponent} from './virtualRow.component';
 
 @Component({
@@ -72,7 +75,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
   @Input() vsData: Observable<any[]> = Observable.empty();
   @Input() vsOptions: Observable<IVirtualScrollOptions> = Observable.empty();
   @Input() vsResize: Observable<any> = Observable.empty();
-  @Input() vsScrollTop: Observable<SetScrollTopCmd> = Observable.empty();
+  @Input() vsUserCmd: Observable<IUserCmd> = Observable.empty();
   @Input() vsDebounceTime: number = 0;
   @Input() vsEqualsFunc: (prevIndex: number, curIndex: number) => boolean = (prevIndex, curIndex) => prevIndex === curIndex;
 
@@ -236,7 +239,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       }
 
       return Observable.merge(rowsDiffCmd$, rowsUpdateCmd$);
-    });
+    }).publish();
 
     const updateScrollWinFunc$ = scrollWin$.map(scrollWindow => (state: IVirtualScrollState) => {
       state.scrollWindow = scrollWindow;
@@ -247,11 +250,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       return state;
     });
 
-    const userCmd$ = this.vsScrollTop;
-
-    const cmd$ = Observable.merge(renderCmd$, userCmd$).publish();
-
-    const createRowFunc$ = cmd$
+    const createRowFunc$ = renderCmd$
       .filter(cmd => cmd.cmdType === CmdOption.CreateRow)
       .map((cmd: CreateRowCmd) => (state: IVirtualScrollState) => {
         const newRow = this._viewContainer.createComponent(this._rowFactory);
@@ -264,7 +263,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state;
       });
 
-    const removeRowFunc$ = cmd$
+    const removeRowFunc$ = renderCmd$
       .filter(cmd => cmd.cmdType === CmdOption.RemoveRow)
       .map((cmd: RemoveRowCmd) => (state: IVirtualScrollState) => {
         const rowComp = state.rows[cmd.actualIndex];
@@ -277,7 +276,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state;
       });
 
-    const shiftRowFunc$ = cmd$
+    const shiftRowFunc$ = renderCmd$
       .filter(cmd => cmd.cmdType === CmdOption.ShiftRow)
       .map(cmd => (state: IVirtualScrollState) => {
         const shift = cmd as ShiftRowCmd;
@@ -291,7 +290,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state;
       });
 
-    const createItemFunc$ = cmd$
+    const createItemFunc$ = renderCmd$
       .filter(cmd => cmd.cmdType === CmdOption.CreateItem)
       .withLatestFrom(data$)
       .map(([cmd, data]) => (state: IVirtualScrollState) => {
@@ -305,7 +304,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state;
       });
 
-    const updateItemFunc$ = cmd$
+    const updateItemFunc$ = renderCmd$
       .filter(cmd => cmd.cmdType === CmdOption.UpdateItem)
       .withLatestFrom(data$)
       .map(([cmd, data]) => (state: IVirtualScrollState) => {
@@ -319,7 +318,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state;
       });
 
-    const removeItemFunc$ = cmd$
+    const removeItemFunc$ = renderCmd$
       .filter(cmd => cmd.cmdType === CmdOption.RemoveItem)
       .map((cmd: RemoveItemCmd) => (state: IVirtualScrollState) => {
         const comp = state.rows[cmd.actualIndex];
@@ -331,8 +330,27 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state;
       });
 
-    const setScrollTop$ = cmd$
-      .filter(cmd => cmd.cmdType === CmdOption.SetScrollTop)
+    const userCmd$ = this.vsUserCmd.publish();
+
+    const userSetScrollTop$ = userCmd$.filter(cmd => cmd.cmdType === UserCmdOption.SetScrollTop);
+
+    const focusRowSetScrollTop$ = userCmd$
+      .filter(cmd => cmd.cmdType === UserCmdOption.FocusRow)
+      .withLatestFrom(scrollWin$)
+      .map(([cmd, scrollWin]) => {
+        const focusRow = cmd as FocusRowCmd;
+        return new SetScrollTopCmd(focusRow.rowIndex * scrollWin.itemHeight);
+      });
+
+    const focusItemSetScrollTop$ = userCmd$
+      .filter(cmd => cmd.cmdType === UserCmdOption.FocusItem)
+      .withLatestFrom(scrollWin$)
+      .map(([cmd, scrollWin]) => {
+        const focusItem = cmd as FocusItemCmd;
+        return new SetScrollTopCmd(Math.floor(focusItem.itemIndex / scrollWin.numActualColumns) * scrollWin.itemHeight);
+      });
+
+    const setScrollTopFunc$ = Observable.merge(userSetScrollTop$, focusRowSetScrollTop$, focusItemSetScrollTop$)
       .map((cmd: SetScrollTopCmd) => (state: IVirtualScrollState) => {
         setScrollTop(cmd.value);
 
@@ -344,10 +362,10 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
     // Update store
     const main$: Observable<IVirtualScrollState> = Observable.merge(
-      createRowFunc$, removeRowFunc$, shiftRowFunc$,
-      createItemFunc$, removeItemFunc$, updateItemFunc$,
-      updateScrollWinFunc$, setScrollTop$)
-    .scan(scanFunc, {measurement: null, scrollWindow: null, rows: {}, needsCheck: false});
+        createRowFunc$, removeRowFunc$, shiftRowFunc$,
+        createItemFunc$, removeItemFunc$, updateItemFunc$,
+        updateScrollWinFunc$, setScrollTopFunc$)
+      .scan(scanFunc, {measurement: null, scrollWindow: null, rows: {}, needsCheck: false});
 
     this._subs.push(main$.filter(state => state.needsCheck && state.scrollWindow !== null).subscribe(state => {
       this.height = state.scrollWindow.virtualHeight;
@@ -362,7 +380,8 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
     }));
 
     // Order is important
-    this._subs.push(cmd$.connect());
+    this._subs.push(userCmd$.connect());
+    this._subs.push(renderCmd$.connect());
     this._subs.push(scrollWin$.connect());
     this._subs.push(measure$.connect());
     this._subs.push(options$.connect());

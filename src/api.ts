@@ -13,5 +13,10 @@ export {
   ICmd, IRowRenderCmd, ItemRenderCmd,
   CreateRowCmd, RemoveRowCmd, ShiftRowCmd,
   CreateItemCmd, UpdateItemCmd, RemoveItemCmd,
-  CmdOption, SetScrollTopCmd,
+  CmdOption
 } from './cmd';
+
+export {
+  FocusItemCmd, FocusRowCmd, IUserCmd,
+  SetScrollTopCmd, UserCmdOption
+} from './userCmd';
