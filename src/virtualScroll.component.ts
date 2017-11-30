@@ -23,6 +23,7 @@ import 'rxjs/add/operator/debounceTime';
 import 'rxjs/add/operator/distinctUntilChanged';
 import 'rxjs/add/operator/filter';
 import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
 import 'rxjs/add/operator/pairwise';
 import 'rxjs/add/operator/partition';
 import 'rxjs/add/operator/publish';
@@ -90,7 +91,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
     private _elem: ElementRef, private _cdr: ChangeDetectorRef,
     private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     const getContainerRect = () => this._elem.nativeElement.getBoundingClientRect();
 
     const getScrollTop = () => this._elem.nativeElement.scrollTop;
@@ -118,8 +119,8 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       .map(() => getScrollTop())
       .startWith(0);
 
-    const measure$ = Observable.combineLatest(rect$, options$)
-      .map(([rect, options]) => calcMeasure(rect, options))
+    const measure$ = Observable.combineLatest(data$, rect$, options$)
+      .mergeMap(async ([data, rect, options]) => calcMeasure(data, rect, options))
       .publish();
 
     const scrollWin$ = Observable.combineLatest(scrollTop$, measure$, dataMeta$, options$)
@@ -178,7 +179,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           const rowIndex = parseInt(key, 10);
           const row = createRowsMap[key];
 
-          createRowCmds.push(new CreateRowCmd(row, rowIndex, row * curWin.itemHeight));
+          createRowCmds.push(new CreateRowCmd(row, rowIndex, curWin.rowShifts !== undefined ? curWin.rowShifts[row] : typeof curWin.itemHeight === 'number' ? row * curWin.itemHeight : 0));
 
           forColumnsIn(0, curWin.numActualColumns - 1, row, curWin.numActualColumns, curWin.numVirtualItems, (c, dataIndex) => {
             createItemCmds.push(new CreateItemCmd(row, rowIndex, c, dataIndex));
@@ -207,7 +208,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           const row = existingRows[key].right;
 
           if(row !== prevRow) {
-            shiftRowCmds.push(new ShiftRowCmd(row, rowIndex, row * curWin.itemHeight));
+            shiftRowCmds.push(new ShiftRowCmd(row, rowIndex, curWin.rowShifts !== undefined ? curWin.rowShifts[row] : typeof curWin.itemHeight === 'number' ? row * curWin.itemHeight : 0));
           }
 
           if(row !== prevRow || numColumns !== 0 || prevWin.numVirtualItems <= getMaxIndex(prevWin) || curWin.numVirtualItems <= getMaxIndex(curWin) || prevWin.dataTimestamp !== curWin.dataTimestamp) {
@@ -339,7 +340,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       .withLatestFrom(scrollWin$)
       .map(([cmd, scrollWin]) => {
         const focusRow = cmd as FocusRowCmd;
-        return new SetScrollTopCmd(focusRow.rowIndex * scrollWin.itemHeight);
+        return new SetScrollTopCmd(scrollWin.rowShifts !== undefined ? scrollWin.rowShifts[focusRow.rowIndex] : typeof scrollWin.itemHeight === 'number' ? (focusRow.rowIndex * scrollWin.itemHeight) : 0);
       });
 
     const focusItemSetScrollTop$ = userCmd$
@@ -347,7 +348,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       .withLatestFrom(scrollWin$)
       .map(([cmd, scrollWin]) => {
         const focusItem = cmd as FocusItemCmd;
-        return new SetScrollTopCmd(Math.floor(focusItem.itemIndex / scrollWin.numActualColumns) * scrollWin.itemHeight);
+        return new SetScrollTopCmd(scrollWin.rowShifts !== undefined ? scrollWin.rowShifts[focusItem.itemIndex] : typeof scrollWin.itemHeight === 'number' ? (Math.floor(focusItem.itemIndex / scrollWin.numActualColumns) * scrollWin.itemHeight) : 0);
       });
 
     const setScrollTopFunc$ = Observable.merge(userSetScrollTop$, focusRowSetScrollTop$, focusItemSetScrollTop$)
