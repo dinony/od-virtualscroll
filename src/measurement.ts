@@ -7,7 +7,7 @@ export async function calcMeasure(data: any[], rect: IVirtualScrollContainer, op
 
   const itemHeight = typeof options.itemHeight === 'number' ? options.itemHeight : await (typeof options.itemHeight !== 'function' ? options.itemHeight : Promise.all(data.map(async (item, i) => (<ItemHeightFunction> options.itemHeight)(item, i))));
 
-  const minItemHeight = typeof itemHeight === 'number' ? itemHeight : itemHeight.reduce((a, b) => Math.min(a, b));
+  const minItemHeight = typeof itemHeight === 'number' ? itemHeight : itemHeight.length === 0 ? 0 : itemHeight.reduce((a, b) => Math.min(a, b));
 
   const numPossibleRows = Math.ceil(rect.height / minItemHeight);
   const numPossibleColumns = options.itemWidth !== undefined ? Math.floor(rect.width / options.itemWidth) : 0;
@@ -33,12 +33,12 @@ export function calcScrollWindow(scrollTop: number, measure: IVirtualScrollMeasu
   const numActualColumns = Math.min(numVirtualItems, requestedColumns);
 
   const numVirtualRows = Math.ceil(numVirtualItems / Math.max(1, numActualColumns));
-  const virtualHeight = typeof measure.itemHeight === 'number' ? numVirtualRows * measure.itemHeight : measure.itemHeight.reduce((a, b) => a + b);
+  const virtualHeight = typeof measure.itemHeight === 'number' ? numVirtualRows * measure.itemHeight : measure.itemHeight.reduce((a, b) => a + b, 0);
   const numAdditionalRows = options.numAdditionalRows !== undefined ? options.numAdditionalRows : 1;
   const requestedRows = measure.numPossibleRows + numAdditionalRows;
   const numActualRows = numActualColumns > 0 ? Math.min(requestedRows, numVirtualRows) : 0;
 
-  const visibleStartRow = typeof measure.itemHeight === 'number' ? undefined : measure.itemHeight.reduce(
+  const visibleStartRow = typeof measure.itemHeight === 'number' ? undefined : Math.max(0, measure.itemHeight.reduce(
     (a, b, i) => {
       if (a >= 0) {
         return a;
@@ -48,9 +48,9 @@ export function calcScrollWindow(scrollTop: number, measure: IVirtualScrollMeasu
       return sum >= 0 ? i : sum;
     },
     -scrollTop
-  );
+  ));
 
-  const actualHeight = typeof measure.itemHeight === 'number' ? numActualRows * measure.itemHeight : typeof visibleStartRow === 'number' ? measure.itemHeight.slice(visibleStartRow).reduce((a, b) => a + b) : 0;
+  const actualHeight = typeof measure.itemHeight === 'number' ? numActualRows * measure.itemHeight : typeof visibleStartRow === 'number' ? measure.itemHeight.slice(visibleStartRow).reduce((a, b) => a + b, 0) : 0;
 
   const visibleEndRow = typeof measure.itemHeight === 'number' ? (numActualColumns > 0 && numActualRows > 0 ? clamp(0, numVirtualRows - 1, Math.floor((scrollTop + actualHeight) / measure.minItemHeight) - 1) : -1) : typeof visibleStartRow === 'number' ? (visibleStartRow + numActualRows - 1) : 0;
 
