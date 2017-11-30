@@ -91,7 +91,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
     private _elem: ElementRef, private _cdr: ChangeDetectorRef,
     private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService) {}
 
-  async ngOnInit() {
+  ngOnInit() {
     const getContainerRect = () => this._elem.nativeElement.getBoundingClientRect();
 
     const getScrollTop = () => this._elem.nativeElement.scrollTop;
