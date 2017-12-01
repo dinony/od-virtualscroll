@@ -119,7 +119,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
             .subscribe(() => this._zone.run(() => scroll$.next())))
         );
 
-    var /** @type {?} */ scrollTop$ = scroll$
+    const scrollTop$ = scroll$
         .map(() => getScrollTop())
         .startWith(0);
 
