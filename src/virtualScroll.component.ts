@@ -113,15 +113,18 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       .map(({width, height}) => ({width, height}));
 
     const scroll$ = new Subject<void>();
-    this._zone.runOutsideAngular(() => this._subs.push(
+    this._zone.runOutsideAngular(() => {
+      this._subs.push(
         Observable.fromEvent(this._elem.nativeElement, 'scroll')
-            .debounceTime(this.vsDebounceTime, animationScheduler)
-            .subscribe(() => this._zone.run(() => scroll$.next())))
-        );
+          .debounceTime(this.vsDebounceTime, animationScheduler)
+          .subscribe(() => {
+            this._zone.run(() => scroll$.next())
+          }))
+      });
 
     const scrollTop$ = scroll$
-        .map(() => getScrollTop())
-        .startWith(0);
+      .map(() => getScrollTop())
+      .startWith(0);
 
     const measure$ = Observable.combineLatest(rect$, options$)
       .map(([rect, options]) => calcMeasure(rect, options))
