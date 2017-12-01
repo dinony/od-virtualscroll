@@ -102,8 +102,6 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
     const data$ = this.vsData.startWith(initData).publish();
 
-    const dataMeta$ = data$.map(data => [(new Date()).getTime(), data.length]);
-
     const defaultOptions = {itemWidth: 100, itemHeight: 100, numAdditionalRows: 1};
 
     const options$ = this.vsOptions.startWith(defaultOptions).publish();
@@ -120,11 +118,19 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       .startWith(0);
 
     const measure$ = Observable.combineLatest(data$, rect$, options$)
-      .mergeMap(async ([data, rect, options]) => calcMeasure(data, rect, options))
+      .mergeMap(async ([data, rect, options]) => {
+        const measurement = await calcMeasure(data, rect, options);
+
+        return {
+          dataLength: data.length,
+          dataTimestamp: (new Date()).getTime(),
+          measurement
+        };
+      })
       .publish();
 
-    const scrollWin$ = Observable.combineLatest(scrollTop$, measure$, dataMeta$, options$)
-      .map(([scrollTop, measurement, [dataTimestamp, dataLength], options]) => calcScrollWindow(scrollTop, measurement, dataLength, dataTimestamp, options))
+    const scrollWin$ = Observable.combineLatest(scrollTop$, measure$, options$)
+      .map(([scrollTop, {dataLength, dataTimestamp, measurement}, options]) => calcScrollWindow(scrollTop, measurement, dataLength, dataTimestamp, options))
       .distinctUntilChanged((prevWin, curWin) => {
         return prevWin.visibleStartRow === curWin.visibleStartRow &&
           prevWin.visibleEndRow === curWin.visibleEndRow &&
