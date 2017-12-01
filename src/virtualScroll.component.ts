@@ -7,29 +7,30 @@ import {
 } from '@angular/core';
 
 import {Observable} from 'rxjs/Observable';
+import {ConnectableObservable} from 'rxjs/observable/ConnectableObservable';
 import {animationFrame as animationScheduler} from 'rxjs/scheduler/animationFrame';
 import {Subscription} from 'rxjs/Subscription';
 
-import 'rxjs/add/observable/combineLatest';
-import 'rxjs/add/observable/concat';
-import 'rxjs/add/observable/empty';
-import 'rxjs/add/observable/from';
-import 'rxjs/add/observable/fromEvent';
-import 'rxjs/add/observable/merge';
-import 'rxjs/add/observable/of';
+import {combineLatest} from 'rxjs/observable/combineLatest';
+import {concat} from 'rxjs/observable/concat';
+import {empty} from 'rxjs/observable/empty';
+import {from} from 'rxjs/observable/from';
+import {fromEvent} from 'rxjs/observable/fromEvent';
+import {merge} from 'rxjs/observable/merge';
+import {of} from 'rxjs/observable/of';
 
-import 'rxjs/add/operator/concatMap';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/mergeMap';
-import 'rxjs/add/operator/pairwise';
-import 'rxjs/add/operator/partition';
-import 'rxjs/add/operator/publish';
-import 'rxjs/add/operator/scan';
-import 'rxjs/add/operator/startWith';
-import 'rxjs/add/operator/withLatestFrom';
+import {concatMap} from 'rxjs/operators/concatMap';
+import {debounceTime} from 'rxjs/operators/debounceTime';
+import {distinctUntilChanged} from 'rxjs/operators/distinctUntilChanged';
+import {filter} from 'rxjs/operators/filter';
+import {map} from 'rxjs/operators/map';
+import {mergeMap} from 'rxjs/operators/mergeMap';
+import {pairwise} from 'rxjs/operators/pairwise';
+import {partition} from 'rxjs/operators/partition';
+import {publish} from 'rxjs/operators/publish';
+import {scan} from 'rxjs/operators/scan';
+import {startWith} from 'rxjs/operators/startWith';
+import {withLatestFrom} from 'rxjs/operators/withLatestFrom';
 
 import {IVirtualScrollOptions, IVirtualScrollState} from './basic';
 import {IVirtualScrollMeasurement, IVirtualScrollWindow} from './basic';
@@ -73,10 +74,10 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
   @ContentChild(TemplateRef) private _templateRef: TemplateRef<ScrollItem>;
   @ViewChild('viewRef', {read: ViewContainerRef}) private _viewContainer: ViewContainerRef;
 
-  @Input() vsData: Observable<any[]> = Observable.empty();
-  @Input() vsOptions: Observable<IVirtualScrollOptions> = Observable.empty();
-  @Input() vsResize: Observable<any> = Observable.empty();
-  @Input() vsUserCmd: Observable<IUserCmd> = Observable.empty();
+  @Input() vsData: Observable<any[]> = empty();
+  @Input() vsOptions: Observable<IVirtualScrollOptions> = empty();
+  @Input() vsResize: Observable<any> = empty();
+  @Input() vsUserCmd: Observable<IUserCmd> = empty();
   @Input() vsDebounceTime: number = 0;
   @Input() vsEqualsFunc: (prevIndex: number, curIndex: number) => boolean = (prevIndex, curIndex) => prevIndex === curIndex;
 
@@ -91,6 +92,10 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
     private _elem: ElementRef, private _cdr: ChangeDetectorRef,
     private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService) {}
 
+  private publish<T> (source: Observable<T>) : ConnectableObservable<T> {
+    return publish<T>()(source);
+  }
+
   ngOnInit() {
     const getContainerRect = () => this._elem.nativeElement.getBoundingClientRect();
 
@@ -100,25 +105,27 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
     const initData: any[] = [];
 
-    const data$ = this.vsData.startWith(initData).publish();
+    const data$ = this.publish(this.vsData.pipe(startWith(initData)));
 
     const defaultOptions = {itemWidth: 100, itemHeight: 100, numAdditionalRows: 1};
 
-    const options$ = this.vsOptions.startWith(defaultOptions).publish();
+    const options$ = this.publish(this.vsOptions.pipe(startWith(defaultOptions)));
 
-    const rect$ = Observable.merge(Observable.fromEvent(window, 'resize'), this.vsResize)
-      .debounceTime(this.vsDebounceTime, animationScheduler)
-      .map(() => getContainerRect())
-      .startWith(getContainerRect())
-      .map(({width, height}) => ({width, height}));
+    const rect$ = merge(fromEvent(window, 'resize'), this.vsResize).pipe(
+      debounceTime(this.vsDebounceTime, animationScheduler),
+      map(() => getContainerRect()),
+      startWith(getContainerRect()),
+      map(({width, height}) => ({width, height}))
+    );
 
-    const scrollTop$ = Observable.fromEvent(this._elem.nativeElement, 'scroll')
-      .debounceTime(this.vsDebounceTime, animationScheduler)
-      .map(() => getScrollTop())
-      .startWith(0);
+    const scrollTop$ = fromEvent(this._elem.nativeElement, 'scroll').pipe(
+      debounceTime(this.vsDebounceTime, animationScheduler),
+      map(() => getScrollTop()),
+      startWith(0)
+    );
 
-    const measure$ = Observable.combineLatest(data$, rect$, options$)
-      .mergeMap(async ([data, rect, options]) => {
+    const measure$ = this.publish(combineLatest(data$, rect$, options$).pipe(
+      mergeMap(async ([data, rect, options]) => {
         const measurement = await calcMeasure(data, rect, options);
 
         return {
@@ -127,24 +134,24 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           measurement
         };
       })
-      .publish();
+    ));
 
-    const scrollWin$ = Observable.combineLatest(scrollTop$, measure$, options$)
-      .map(([scrollTop, {dataLength, dataTimestamp, measurement}, options]) => calcScrollWindow(scrollTop, measurement, dataLength, dataTimestamp, options))
-      .distinctUntilChanged((prevWin, curWin) => {
+    const scrollWin$ = this.publish(combineLatest(scrollTop$, measure$, options$).pipe(
+      map(([scrollTop, {dataLength, dataTimestamp, measurement}, options]) => calcScrollWindow(scrollTop, measurement, dataLength, dataTimestamp, options)),
+      distinctUntilChanged((prevWin, curWin) => {
         return prevWin.visibleStartRow === curWin.visibleStartRow &&
           prevWin.visibleEndRow === curWin.visibleEndRow &&
           prevWin.numActualColumns === curWin.numActualColumns &&
           prevWin.numVirtualItems === curWin.numVirtualItems &&
           prevWin.dataTimestamp === curWin.dataTimestamp;
       })
-      .publish();
+    ));
 
-    const dScrollWin$ = scrollWin$.pairwise();
+    const dScrollWin$ = scrollWin$.pipe(pairwise());
 
-    const renderCmd$ = dScrollWin$.concatMap(([prevWin, curWin]) => {
-      let rowsDiffCmd$ = Observable.of(new NoopCmd());
-      let rowsUpdateCmd$ = Observable.of(new NoopCmd());
+    const renderCmd$ = this.publish(dScrollWin$.pipe(concatMap(([prevWin, curWin]) => {
+      let rowsDiffCmd$ = of(new NoopCmd());
+      let rowsUpdateCmd$ = of(new NoopCmd());
 
       const prevIndexMap = {};
       const curIndexMap = {};
@@ -176,7 +183,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           });
         }
 
-        rowsDiffCmd$ = Observable.concat(Observable.from(removeItemCmds.reverse()), Observable.from(removeRowCmds));
+        rowsDiffCmd$ = concat(from(removeItemCmds.reverse()), from(removeRowCmds));
       } else if(!isEmpty(createRowsMap)) {
         const createRowCmds: CreateRowCmd[] = [];
         const createItemCmds: CreateItemCmd[] = [];
@@ -192,7 +199,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           });
         }
 
-        rowsDiffCmd$ = Observable.concat(Observable.from(createRowCmds), Observable.from(createItemCmds));
+        rowsDiffCmd$ = concat(from(createRowCmds), from(createItemCmds));
       }
 
       const existingRows = intersection(prevIndexMap, curIndexMap);
@@ -240,26 +247,26 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           }
         }
 
-        rowsUpdateCmd$ = Observable.concat(
-          Observable.merge(Observable.from(removeItemCmds.reverse()), Observable.from(createItemCmds), Observable.from(updateItemCmds), Observable.from(shiftRowCmds)),
-          Observable.merge(Observable.from(columnDiffRemoveItemCmds.reverse()), Observable.from(columnDiffCreateItemCmds)));
+        rowsUpdateCmd$ = concat(
+          merge(from(removeItemCmds.reverse()), from(createItemCmds), from(updateItemCmds), from(shiftRowCmds)),
+          merge(from(columnDiffRemoveItemCmds.reverse()), from(columnDiffCreateItemCmds)));
       }
 
-      return Observable.merge(rowsDiffCmd$, rowsUpdateCmd$);
-    }).publish();
+      return merge(rowsDiffCmd$, rowsUpdateCmd$);
+    })));
 
-    const updateScrollWinFunc$ = scrollWin$.map(scrollWindow => (state: IVirtualScrollState) => {
+    const updateScrollWinFunc$ = scrollWin$.pipe(map(scrollWindow => (state: IVirtualScrollState) => {
       state.scrollWindow = scrollWindow;
 
       this._obsService.emitScrollWin([scrollWindow]);
 
       state.needsCheck = true;
       return state;
-    });
+    }));
 
-    const createRowFunc$ = renderCmd$
-      .filter(cmd => cmd.cmdType === CmdOption.CreateRow)
-      .map((cmd: CreateRowCmd) => (state: IVirtualScrollState) => {
+    const createRowFunc$ = renderCmd$.pipe(
+      filter(cmd => cmd.cmdType === CmdOption.CreateRow),
+      map((cmd: CreateRowCmd) => (state: IVirtualScrollState) => {
         const newRow = this._viewContainer.createComponent(this._rowFactory);
         newRow.instance.setTransform(cmd.initShift);
         state.rows[cmd.actualIndex] = newRow;
@@ -268,11 +275,12 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
-    const removeRowFunc$ = renderCmd$
-      .filter(cmd => cmd.cmdType === CmdOption.RemoveRow)
-      .map((cmd: RemoveRowCmd) => (state: IVirtualScrollState) => {
+    const removeRowFunc$ = renderCmd$.pipe(
+      filter(cmd => cmd.cmdType === CmdOption.RemoveRow),
+      map((cmd: RemoveRowCmd) => (state: IVirtualScrollState) => {
         const rowComp = state.rows[cmd.actualIndex];
         rowComp.destroy();
         delete state.rows[cmd.actualIndex];
@@ -281,11 +289,12 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
-    const shiftRowFunc$ = renderCmd$
-      .filter(cmd => cmd.cmdType === CmdOption.ShiftRow)
-      .map(cmd => (state: IVirtualScrollState) => {
+    const shiftRowFunc$ = renderCmd$.pipe(
+      filter(cmd => cmd.cmdType === CmdOption.ShiftRow),
+      map(cmd => (state: IVirtualScrollState) => {
         const shift = cmd as ShiftRowCmd;
         const row = state.rows[shift.actualIndex];
         row.instance.updateRow(shift.virtualIndex);
@@ -295,12 +304,13 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
-    const createItemFunc$ = renderCmd$
-      .filter(cmd => cmd.cmdType === CmdOption.CreateItem)
-      .withLatestFrom(data$)
-      .map(([cmd, data]) => (state: IVirtualScrollState) => {
+    const createItemFunc$ = renderCmd$.pipe(
+      filter(cmd => cmd.cmdType === CmdOption.CreateItem),
+      withLatestFrom(data$),
+      map(([cmd, data]) => (state: IVirtualScrollState) => {
         const createItem = cmd as CreateItemCmd;
         const item = new ScrollItem(data[createItem.dataIndex], createItem.virtualIndex, createItem.columnIndex);
         const viewRef = state.rows[createItem.actualIndex].instance.addItem(this._templateRef, item);
@@ -309,12 +319,13 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
-    const updateItemFunc$ = renderCmd$
-      .filter(cmd => cmd.cmdType === CmdOption.UpdateItem)
-      .withLatestFrom(data$)
-      .map(([cmd, data]) => (state: IVirtualScrollState) => {
+    const updateItemFunc$ = renderCmd$.pipe(
+      filter(cmd => cmd.cmdType === CmdOption.UpdateItem),
+      withLatestFrom(data$),
+      map(([cmd, data]) => (state: IVirtualScrollState) => {
         const update = cmd as UpdateItemCmd;
         const item = data[update.dataIndex];
         const viewRef = state.rows[update.actualIndex].instance.updateItem(update.columnIndex, item);
@@ -323,11 +334,12 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
-    const removeItemFunc$ = renderCmd$
-      .filter(cmd => cmd.cmdType === CmdOption.RemoveItem)
-      .map((cmd: RemoveItemCmd) => (state: IVirtualScrollState) => {
+    const removeItemFunc$ = renderCmd$.pipe(
+      filter(cmd => cmd.cmdType === CmdOption.RemoveItem),
+      map((cmd: RemoveItemCmd) => (state: IVirtualScrollState) => {
         const comp = state.rows[cmd.actualIndex];
         comp.instance.removeItem(cmd.columnIndex);
 
@@ -335,46 +347,50 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
-    const userCmd$ = this.vsUserCmd.publish();
+    const userCmd$ = this.publish(this.vsUserCmd);
 
-    const userSetScrollTop$ = userCmd$.filter(cmd => cmd.cmdType === UserCmdOption.SetScrollTop);
+    const userSetScrollTop$ = userCmd$.pipe(filter(cmd => cmd.cmdType === UserCmdOption.SetScrollTop));
 
-    const focusRowSetScrollTop$ = userCmd$
-      .filter(cmd => cmd.cmdType === UserCmdOption.FocusRow)
-      .withLatestFrom(scrollWin$)
-      .map(([cmd, scrollWin]) => {
+    const focusRowSetScrollTop$ = userCmd$.pipe(
+      filter(cmd => cmd.cmdType === UserCmdOption.FocusRow),
+      withLatestFrom(scrollWin$),
+      map(([cmd, scrollWin]) => {
         const focusRow = cmd as FocusRowCmd;
         return new SetScrollTopCmd(scrollWin.rowShifts !== undefined ? scrollWin.rowShifts[focusRow.rowIndex] : typeof scrollWin.itemHeight === 'number' ? (focusRow.rowIndex * scrollWin.itemHeight) : 0);
-      });
+      })
+    );
 
-    const focusItemSetScrollTop$ = userCmd$
-      .filter(cmd => cmd.cmdType === UserCmdOption.FocusItem)
-      .withLatestFrom(scrollWin$)
-      .map(([cmd, scrollWin]) => {
+    const focusItemSetScrollTop$ = userCmd$.pipe(
+      filter(cmd => cmd.cmdType === UserCmdOption.FocusItem),
+      withLatestFrom(scrollWin$),
+      map(([cmd, scrollWin]) => {
         const focusItem = cmd as FocusItemCmd;
         return new SetScrollTopCmd(scrollWin.rowShifts !== undefined ? scrollWin.rowShifts[focusItem.itemIndex] : typeof scrollWin.itemHeight === 'number' ? (Math.floor(focusItem.itemIndex / scrollWin.numActualColumns) * scrollWin.itemHeight) : 0);
-      });
+      })
+    );
 
-    const setScrollTopFunc$ = Observable.merge(userSetScrollTop$, focusRowSetScrollTop$, focusItemSetScrollTop$)
-      .map((cmd: SetScrollTopCmd) => (state: IVirtualScrollState) => {
+    const setScrollTopFunc$ = merge(userSetScrollTop$, focusRowSetScrollTop$, focusItemSetScrollTop$).pipe(
+      map((cmd: SetScrollTopCmd) => (state: IVirtualScrollState) => {
         setScrollTop(cmd.value);
 
         state.needsCheck = false;
         return state;
-      });
+      })
+    );
 
     const scanFunc = (state: IVirtualScrollState, changeFn: (state: IVirtualScrollState) => IVirtualScrollState): IVirtualScrollState => changeFn(state);
 
     // Update store
-    const main$: Observable<IVirtualScrollState> = Observable.merge(
+    const main$: Observable<IVirtualScrollState> = merge(
         createRowFunc$, removeRowFunc$, shiftRowFunc$,
         createItemFunc$, removeItemFunc$, updateItemFunc$,
         updateScrollWinFunc$, setScrollTopFunc$)
-      .scan(scanFunc, {measurement: null, scrollWindow: null, rows: {}, needsCheck: false});
+      .pipe(scan(scanFunc, {measurement: null, scrollWindow: null, rows: {}, needsCheck: false}));
 
-    this._subs.push(main$.filter(state => state.needsCheck && state.scrollWindow !== null).subscribe(state => {
+    this._subs.push(main$.pipe(filter(state => state.needsCheck && state.scrollWindow !== null)).subscribe(state => {
       this.height = state.scrollWindow.virtualHeight;
 
       if(state.scrollWindow.itemWidth === undefined) {
