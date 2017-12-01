@@ -2,11 +2,12 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef, Component,
   ComponentFactory, ComponentFactoryResolver, ContentChild,
   ElementRef, Input, OnDestroy, OnInit,
-  Renderer, TemplateRef, ViewChild,
-  ViewContainerRef
+  TemplateRef, ViewChild,
+  ViewContainerRef, NgZone
 } from '@angular/core';
 
 import {Observable} from 'rxjs/Observable';
+import {Subject} from 'rxjs/Subject';
 import {animationFrame as animationScheduler} from 'rxjs/scheduler/animationFrame';
 import {Subscription} from 'rxjs/Subscription';
 
@@ -88,7 +89,8 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     private _elem: ElementRef, private _cdr: ChangeDetectorRef,
-    private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService) {}
+    private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService,
+    private _zone: NgZone) {}
 
   ngOnInit() {
     const getContainerRect = () => this._elem.nativeElement.getBoundingClientRect();
@@ -113,8 +115,17 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       .startWith(getContainerRect())
       .map(({width, height}) => ({width, height}));
 
-    const scrollTop$ = Observable.fromEvent(this._elem.nativeElement, 'scroll')
-      .debounceTime(this.vsDebounceTime, animationScheduler)
+    const scroll$ = new Subject<void>();
+    this._zone.runOutsideAngular(() => {
+      this._subs.push(
+        Observable.fromEvent(this._elem.nativeElement, 'scroll')
+          .debounceTime(this.vsDebounceTime, animationScheduler)
+          .subscribe(() => {
+            this._zone.run(() => scroll$.next())
+          }))
+      });
+
+    const scrollTop$ = scroll$
       .map(() => getScrollTop())
       .startWith(0);
 
