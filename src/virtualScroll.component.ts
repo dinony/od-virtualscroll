@@ -6,6 +6,8 @@ import {
   ViewContainerRef, NgZone
 } from '@angular/core';
 
+// test
+
 import {Observable} from 'rxjs/Observable';
 import {Subject} from 'rxjs/Subject';
 import {animationFrame as animationScheduler} from 'rxjs/scheduler/animationFrame';
