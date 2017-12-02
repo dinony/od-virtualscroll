@@ -110,13 +110,13 @@ If you want to apply a traditional layout and wonder about the space between inl
 ```typescript
 export interface IVirtualScrollOptions {
   itemWidth?: number;
-  itemHeight: number;
+  itemHeight: number|Promise<number>|((item: any, i: number) => number|Promise<number>);
   numAdditionalRows?: number;
   numLimitColumns?: number;
 }
 ```
 
-The component requires either fixed-size cells (itemWidth, itemHeight) or a fixed number of cells per row (itemHeight, numLimitColumns).
+The component requires either fixed-size cells (itemWidth, itemHeight) or a fixed number of cells per row (itemHeight, numLimitColumns). When using a function for itemHeight, numLimitColumns must be set to exactly 1.
 
 Further, to improve scrolling, additional rows may be requested.
 
