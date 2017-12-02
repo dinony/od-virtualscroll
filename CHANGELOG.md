@@ -1,5 +1,9 @@
 # Changelog
 
+# 1.0.1 (2017-12-02)
+
+* Fixes issue [#6](https://github.com/dinony/od-virtualscroll/pull/6)
+
 # 1.0.0 (2017-07-03)
 
 * Added support to focus row/item index (see [#7](https://github.com/dinony/od-virtualscroll/issues/7))
