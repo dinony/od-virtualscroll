@@ -2,13 +2,14 @@ import {
   ChangeDetectionStrategy, ChangeDetectorRef, Component,
   ComponentFactory, ComponentFactoryResolver, ContentChild,
   ElementRef, Input, OnDestroy, OnInit,
-  Renderer, TemplateRef, ViewChild,
-  ViewContainerRef
+  TemplateRef, ViewChild,
+  ViewContainerRef, NgZone
 } from '@angular/core';
 
 import {Observable} from 'rxjs/Observable';
 import {ConnectableObservable} from 'rxjs/observable/ConnectableObservable';
 import {animationFrame as animationScheduler} from 'rxjs/scheduler/animationFrame';
+import {Subject} from 'rxjs/Subject';
 import {Subscription} from 'rxjs/Subscription';
 
 import {combineLatest} from 'rxjs/observable/combineLatest';
@@ -90,7 +91,8 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
   constructor(
     private _elem: ElementRef, private _cdr: ChangeDetectorRef,
-    private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService) {}
+    private _componentFactoryResolver: ComponentFactoryResolver, private _obsService: ScrollObservableService,
+    private _zone: NgZone) {}
 
   private publish<T> (source: Observable<T>) : ConnectableObservable<T> {
     return publish<T>()(source);
@@ -118,11 +120,19 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
       map(({width, height}) => ({width, height}))
     );
 
-    const scrollTop$ = fromEvent(this._elem.nativeElement, 'scroll').pipe(
-      debounceTime(this.vsDebounceTime, animationScheduler),
-      map(() => getScrollTop()),
-      startWith(0)
-    );
+    const scroll$ = new Subject<void>();
+    this._zone.runOutsideAngular(() => {
+      this._subs.push(
+        Observable.fromEvent(this._elem.nativeElement, 'scroll')
+          .debounceTime(this.vsDebounceTime, animationScheduler)
+          .subscribe(() => {
+            this._zone.run(() => scroll$.next())
+          }))
+      });
+
+    const scrollTop$ = scroll$
+      .map(() => getScrollTop())
+      .startWith(0);
 
     const measure$ = this.publish(combineLatest(data$, rect$, options$).pipe(
       mergeMap(async ([data, rect, options]) => {
