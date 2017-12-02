@@ -1,8 +1,12 @@
 # Changelog
 
-# 1.0.1 (2017-12-02)
+# 1.0.2 (2017-12-02)
 
 * Fixes issue [#6](https://github.com/dinony/od-virtualscroll/pull/6)
+
+# 1.0.1 (2017-08-18)
+
+* Fixes issues [14](https://github.com/dinony/od-virtualscroll/issues/14)
 
 # 1.0.0 (2017-07-03)
 
