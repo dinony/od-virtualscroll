@@ -13,7 +13,15 @@
     "member-ordering": false,
     "quotemark": [true, "single", "avoid-escape"],
     "trailing-comma": false,
-    "variable-name": [true, "check-format", "allow-leading-underscore", "allow-pascal-case", "allow-snake-case", "ban-keywords"],
+    "no-angle-bracket-type-assertion": false,
+    "variable-name": [
+      true,
+      "check-format",
+      "allow-leading-underscore",
+      "allow-pascal-case",
+      "allow-snake-case",
+      "ban-keywords"
+    ],
     "whitespace": [
       true,
       "check-operator",

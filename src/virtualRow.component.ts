@@ -44,7 +44,7 @@ export class VirtualRowComponent {
   }
 
   updateRow(row: number): void {
-    for(let c = 0 c < this._viewContainer.length c++) {
+    for(let c = 0; c < this._viewContainer.length; c++) {
       const viewRef = this._viewContainer.get(c) as EmbeddedViewRef<ScrollItem>
       viewRef.context.row = row
     }
