@@ -1,9 +1,9 @@
-import {NgModule} from '@angular/core';
-import {BrowserModule} from '@angular/platform-browser';
+import {NgModule} from '@angular/core'
+import {BrowserModule} from '@angular/platform-browser'
 
-import {VirtualScrollModule} from '../../src/api';
+import {VirtualScrollModule} from '../../src/api'
 
-import {AppComponent} from './app.component';
+import {AppComponent} from './app.component'
 
 @NgModule({
   bootstrap: [AppComponent],

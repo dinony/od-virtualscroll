@@ -1,13 +1,9 @@
-import {Component} from '@angular/core';
+import {Component} from '@angular/core'
 
-import {Observable} from 'rxjs/Observable';
+import {Observable, of, range} from 'rxjs'
+import {reduce} from 'rxjs/operators'
 
-import 'rxjs/add/observable/of';
-import 'rxjs/add/observable/range';
-
-import 'rxjs/add/operator/reduce';
-
-import {IVirtualScrollOptions} from '../../src/api';
+import {IVirtualScrollOptions} from '../../src/api'
 
 @Component({
   selector: 'app-shell',
@@ -100,6 +96,10 @@ import {IVirtualScrollOptions} from '../../src/api';
     </div>`
 })
 export class AppComponent {
-  data$: Observable<number[]> = Observable.range(0, 100000).reduce((acc, cur) => { acc.push(cur); return acc; }, []);
-  options$ = Observable.of({itemWidth: 202, itemHeight: 202, numAdditionalRows: 1});
+  data$: Observable<number[]> = range(0, 100000).pipe(reduce((acc, cur) => {
+    acc.push(cur)
+    return acc
+  }, []))
+
+  options$ = of({itemWidth: 202, itemHeight: 202, numAdditionalRows: 1})
 }

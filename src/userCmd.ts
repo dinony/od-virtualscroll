@@ -6,20 +6,20 @@ export enum UserCmdOption {
 }
 
 export interface IUserCmd {
-  cmdType: UserCmdOption;
+  cmdType: UserCmdOption
 }
 
 export class SetScrollTopCmd implements IUserCmd {
-  cmdType = UserCmdOption.SetScrollTop;
+  cmdType = UserCmdOption.SetScrollTop
   constructor(public value: number) {}
 }
 
 export class FocusRowCmd implements IUserCmd {
-  cmdType = UserCmdOption.FocusRow;
+  cmdType = UserCmdOption.FocusRow
   constructor(public rowIndex: number) {}
 }
 
 export class FocusItemCmd implements IUserCmd {
-  cmdType = UserCmdOption.FocusItem;
+  cmdType = UserCmdOption.FocusItem
   constructor(public itemIndex: number) {}
 }

@@ -58,4 +58,4 @@ SystemJS.config({
     "noFallthroughCasesInSwitch": true,
     "suppressImplicitAnyIndexErrors": true
   }
-});
+})

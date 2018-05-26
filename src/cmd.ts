@@ -1,5 +1,5 @@
 /* tslint:disable:max-classes-per-file */
-import {IVirtualScrollWindow} from './basic';
+import {IVirtualScrollWindow} from './basic'
 
 export enum CmdOption {
   Noop,
@@ -12,25 +12,25 @@ export enum CmdOption {
 }
 
 export interface ICmd {
-  cmdType: CmdOption;
+  cmdType: CmdOption
 }
 
 export interface IRowRenderCmd extends ICmd {
-  virtualIndex: number;
-  actualIndex: number;
+  virtualIndex: number
+  actualIndex: number
 }
 
 export interface ItemRenderCmd extends IRowRenderCmd {
-  columnIndex: number;
-  dataIndex: number;
+  columnIndex: number
+  dataIndex: number
 }
 
 export class NoopCmd implements ICmd {
-  cmdType = CmdOption.Noop;
+  cmdType = CmdOption.Noop
 }
 
 export class CreateRowCmd implements IRowRenderCmd {
-  cmdType = CmdOption.CreateRow;
+  cmdType = CmdOption.CreateRow
   constructor(
     public virtualIndex: number,
     public actualIndex: number,
@@ -38,14 +38,14 @@ export class CreateRowCmd implements IRowRenderCmd {
 }
 
 export class RemoveRowCmd implements IRowRenderCmd {
-  cmdType = CmdOption.RemoveRow;
+  cmdType = CmdOption.RemoveRow
   constructor(
     public virtualIndex: number,
     public actualIndex: number) {}
 }
 
 export class ShiftRowCmd implements IRowRenderCmd {
-  cmdType = CmdOption.ShiftRow;
+  cmdType = CmdOption.ShiftRow
   constructor(
     public virtualIndex: number,
     public actualIndex: number,
@@ -53,7 +53,7 @@ export class ShiftRowCmd implements IRowRenderCmd {
 }
 
 export class CreateItemCmd implements ItemRenderCmd {
-  cmdType = CmdOption.CreateItem;
+  cmdType = CmdOption.CreateItem
   constructor(
     public virtualIndex: number,
     public actualIndex: number,
@@ -62,7 +62,7 @@ export class CreateItemCmd implements ItemRenderCmd {
 }
 
 export class UpdateItemCmd implements ItemRenderCmd {
-  cmdType = CmdOption.UpdateItem;
+  cmdType = CmdOption.UpdateItem
   constructor(
     public virtualIndex: number,
     public actualIndex: number,
@@ -71,7 +71,7 @@ export class UpdateItemCmd implements ItemRenderCmd {
 }
 
 export class RemoveItemCmd implements ItemRenderCmd {
-  cmdType = CmdOption.RemoveItem;
+  cmdType = CmdOption.RemoveItem
   constructor(
     public virtualIndex: number,
     public actualIndex: number,

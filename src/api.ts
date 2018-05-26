@@ -1,22 +1,22 @@
-export {VirtualScrollModule} from './virtualScroll.module';
+export {VirtualScrollModule} from './virtualScroll.module'
 
 // Re-export some types that consumers might need
-export {IVirtualScrollOptions, IVirtualScrollWindow} from './basic';
+export {IVirtualScrollOptions, IVirtualScrollWindow} from './basic'
 
-export {ScrollObservableService} from './service';
+export {ScrollObservableService} from './service'
 
-export {VirtualRowComponent} from './virtualRow.component';
+export {VirtualRowComponent} from './virtualRow.component'
 
-export {ScrollItem} from './scrollItem';
+export {ScrollItem} from './scrollItem'
 
 export {
   ICmd, IRowRenderCmd, ItemRenderCmd,
   CreateRowCmd, RemoveRowCmd, ShiftRowCmd,
   CreateItemCmd, UpdateItemCmd, RemoveItemCmd,
   CmdOption
-} from './cmd';
+} from './cmd'
 
 export {
   FocusItemCmd, FocusRowCmd, IUserCmd,
   SetScrollTopCmd, UserCmdOption
-} from './userCmd';
+} from './userCmd'

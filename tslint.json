@@ -5,6 +5,7 @@
   ],
   "jsRules": {},
   "rules": {
+    "semicolon": [true, "never"],
     "arrow-parens": [true, "ban-single-arg-parens"],
     "forin": false,
     "max-line-length": false,
@@ -13,7 +14,15 @@
     "quotemark": [true, "single", "avoid-escape"],
     "trailing-comma": false,
     "variable-name": [true, "check-format", "allow-leading-underscore", "allow-pascal-case", "allow-snake-case", "ban-keywords"],
-    "whitespace": [true, "check-operator", "check-typecast", "check-module", "check-separator", "check-type", "check-typecast", "check-preblock"]
+    "whitespace": [
+      true,
+      "check-operator",
+      "check-typecast",
+      "check-separator",
+      "check-type",
+      "check-typecast",
+      "check-preblock"
+    ]
   },
   "rulesDirectory": []
 }
