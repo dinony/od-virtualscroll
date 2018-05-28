@@ -13,7 +13,8 @@ SystemJS.config({
     '@angular/platform-browser': 'npm:@angular/platform-browser/bundles/platform-browser.umd.js',
     '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
 
-    rxjs: 'npm:rxjs'
+    rxjs: 'npm:rxjs/index.js',
+    'rxjs/operators': 'npm:rxjs/operators/index.js'
   },
   packages: {
     ts: {main: 'plugin.js'},
@@ -41,7 +42,7 @@ SystemJS.config({
   transpiler: 'ts',
   typescriptOptions: {
     "target": "es5",
-    "module": "es2015",
+    "module": "System",
     "moduleResolution": "node",
     "lib": ["es2015", "dom"],
     "noImplicitAny": true,
