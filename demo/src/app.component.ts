@@ -96,7 +96,7 @@ import {IVirtualScrollOptions} from '../../src/api'
     </div>`
 })
 export class AppComponent {
-  data$: Observable<number[]> = range(0, 100000).pipe(reduce((acc, cur) => {
+  data$ = range(0, 100000).pipe(reduce((acc: number[], cur: number) => {
     acc.push(cur)
     return acc
   }, []))
