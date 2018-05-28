@@ -8,7 +8,9 @@ import {
 import {
   animationFrameScheduler as animationScheduler,
   combineLatest, concat, empty, fromEvent,
-  merge, Observable, Subject, Subscription
+  merge, Observable, Subject, Subscription, of,
+  from,
+  ConnectableObservable
 } from 'rxjs'
 
 import {
@@ -22,7 +24,7 @@ import {IVirtualScrollMeasurement, IVirtualScrollWindow} from './basic'
 import {
   CmdOption, CreateItemCmd, CreateRowCmd,
   NoopCmd,  RemoveItemCmd, RemoveRowCmd,
-  ShiftRowCmd, UpdateItemCmd
+  ShiftRowCmd, UpdateItemCmd, ICmd
 } from './cmd'
 import {forColumnsIn, forColumnsInWithPrev, forRowsIn} from './enumerate'
 import {calcMeasure, calcScrollWindow, getMaxIndex} from './measurement'
@@ -87,13 +89,13 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
     const initData: any[] = []
 
-    const data$ = this.vsData.pipe(startWith(initData), publish())
+    const data$ = this.vsData.pipe(startWith(initData), publish()) as ConnectableObservable<any[]>
 
     const dataMeta$ = data$.pipe(map(data => [(new Date()).getTime(), data.length]))
 
     const defaultOptions = {itemWidth: 100, itemHeight: 100, numAdditionalRows: 1}
 
-    const options$ = this.vsOptions.pipe(startWith(defaultOptions), publish())
+    const options$ = this.vsOptions.pipe(startWith(defaultOptions), publish()) as ConnectableObservable<IVirtualScrollOptions>
 
     const rect$ = merge(fromEvent(window, 'resize'), this.vsResize).pipe(
       debounceTime(this.vsDebounceTime, animationScheduler),
@@ -117,7 +119,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
 
     const measure$ = combineLatest(rect$, options$).pipe(
       map(([rect, options]) => calcMeasure(rect, options)),
-      publish())
+      publish()) as ConnectableObservable<IVirtualScrollMeasurement>
 
     const scrollWin$ = combineLatest(scrollTop$, measure$, dataMeta$, options$).pipe(
       map(([scrollTop, measurement, [dataTimestamp, dataLength], options]) => calcScrollWindow(scrollTop, measurement, dataLength, dataTimestamp, options)),
@@ -128,13 +130,13 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           prevWin.numVirtualItems === curWin.numVirtualItems &&
           prevWin.dataTimestamp === curWin.dataTimestamp
       }),
-      publish())
+      publish()) as ConnectableObservable<IVirtualScrollWindow>
 
     const dScrollWin$ = scrollWin$.pipe(pairwise())
 
     const renderCmd$ = dScrollWin$.pipe(concatMap(([prevWin, curWin]) => {
-      let rowsDiffCmd$ = Observable.of(new NoopCmd())
-      let rowsUpdateCmd$ = Observable.of(new NoopCmd())
+      let rowsDiffCmd$ = of(new NoopCmd())
+      let rowsUpdateCmd$ = of(new NoopCmd())
 
       const prevIndexMap = {}
       const curIndexMap = {}
@@ -166,7 +168,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           })
         }
 
-        rowsDiffCmd$ = concat(Observable.from(removeItemCmds.reverse()), Observable.from(removeRowCmds))
+        rowsDiffCmd$ = concat(from(removeItemCmds.reverse()), from(removeRowCmds))
       } else if(!isEmpty(createRowsMap)) {
         const createRowCmds: CreateRowCmd[] = []
         const createItemCmds: CreateItemCmd[] = []
@@ -182,7 +184,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
           })
         }
 
-        rowsDiffCmd$ = concat(Observable.from(createRowCmds), Observable.from(createItemCmds))
+        rowsDiffCmd$ = concat(from(createRowCmds), from(createItemCmds))
       }
 
       const existingRows = intersection(prevIndexMap, curIndexMap)
@@ -231,12 +233,12 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         }
 
         rowsUpdateCmd$ = concat(
-          merge(Observable.from(removeItemCmds.reverse()), Observable.from(createItemCmds), Observable.from(updateItemCmds), Observable.from(shiftRowCmds)),
-          merge(Observable.from(columnDiffRemoveItemCmds.reverse()), Observable.from(columnDiffCreateItemCmds)))
+          merge(from(removeItemCmds.reverse()), from(createItemCmds), from(updateItemCmds), from(shiftRowCmds)),
+          merge(from(columnDiffRemoveItemCmds.reverse()), from(columnDiffCreateItemCmds)))
       }
 
       return merge(rowsDiffCmd$, rowsUpdateCmd$)
-    }), publish())
+    }), publish()) as ConnectableObservable<ICmd>
 
     const updateScrollWinFunc$ = scrollWin$.pipe(map(scrollWindow => (state: IVirtualScrollState) => {
       state.scrollWindow = scrollWindow
@@ -327,7 +329,7 @@ export class VirtualScrollComponent implements OnInit, OnDestroy {
         return state
       }))
 
-    const userCmd$ = this.vsUserCmd.pipe(publish())
+    const userCmd$ = this.vsUserCmd.pipe(publish()) as ConnectableObservable<IUserCmd>
 
     const userSetScrollTop$ = userCmd$.pipe(filter(cmd => cmd.cmdType === UserCmdOption.SetScrollTop))
 
