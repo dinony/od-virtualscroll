@@ -32,7 +32,7 @@ Let's you scroll efficiently through a humongous list/grid of items (with single
   - A lot of code samples
 - Module formats
   - Ships FESM5 and FESM15
-  - Ships ES5/UMD, ES5/ES2015 and E2015/ES2015 exports (`{{target}}/{{module}}`)
+  - Ships ES5/UMD, ES5/ES2015 and ES2015/ES2015 exports (`{{target}}/{{module}}`)
 
 ## Demo
 
