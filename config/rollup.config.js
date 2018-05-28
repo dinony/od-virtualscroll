@@ -1,5 +1,6 @@
 export default {
   input: 'dist/es5/api.js',
+  external: ['@angular/core', '@angular/common', 'rxjs', 'rxjs/operators'],
   output: {
     name: 'od.virtualscroll',
     format: 'umd',
@@ -8,12 +9,8 @@ export default {
     globals: {
       '@angular/core': 'ng.core',
       '@angular/common': 'ng.common',
-      // 'rxjs/Observable': 'Rx',
-      // 'rxjs/ReplaySubject': 'Rx',
-      // 'rxjs/add/operator/map': 'Rx.Observable.prototype',
-      // 'rxjs/add/operator/mergeMap': 'Rx.Observable.prototype',
-      // 'rxjs/add/observable/fromEvent': 'Rx.Observable',
-      // 'rxjs/add/observable/of': 'Rx.Observable'
+      'rxjs': 'rxjs',
+      'rxjs/operators': 'rxjs.operators',
     }
   }
 }
