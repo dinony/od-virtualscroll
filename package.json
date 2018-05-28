@@ -11,7 +11,7 @@
     "build:es5": "ngc -p config/tsconfig.es5.json && npm run build:fesm5",
     "build:fesm5": "rollup dist/es5/od-virtualscroll.js -o dist/fesm5/od-virtualscroll.js -f es && cpx 'dist/es5/*.d.ts' 'dist/fesm5' && cpx 'dist/es5/*.metadata.json' 'dist/fesm5'",
     "build:es2015": "ngc -p config/tsconfig.es2015.json && npm run build:fesm15",
-    "build:fesm15": "rollup dist/es2015/od-virtualscroll.js -o dist/fesm15/od-virtualscroll.js && cpx 'dist/es2015/*.d.ts' 'dist/fesm15' && cpx 'dist/es2015/*.metadata.json' 'dist/fesm15'",
+    "build:fesm15": "rollup dist/es2015/od-virtualscroll.js -o dist/fesm15/od-virtualscroll.js -f es && cpx 'dist/es2015/*.d.ts' 'dist/fesm15' && cpx 'dist/es2015/*.metadata.json' 'dist/fesm15'",
     "build:bundle": "rollup -c config/rollup.config.js",
     "build": "npm run build:es5 && npm run build:es2015 && npm run build:bundle",
     "buildDemo:es2015": "cpx config/tsconfig-demo.es2015.json ./ && ngc -p tsconfig-demo.es2015.json && del-cli ./tsconfig-demo.es2015.json",
