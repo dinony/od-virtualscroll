@@ -13,8 +13,7 @@ SystemJS.config({
     '@angular/platform-browser': 'npm:@angular/platform-browser/bundles/platform-browser.umd.js',
     '@angular/platform-browser-dynamic': 'npm:@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js',
 
-    rxjs: 'npm:rxjs/index.js',
-    'rxjs/operators': 'npm:rxjs/operators/index.js'
+    'rxjs': 'npm:rxjs'
   },
   packages: {
     ts: {main: 'plugin.js'},
@@ -35,9 +34,8 @@ SystemJS.config({
       defaultExtension: 'ts',
       meta: {'*.ts': {loader:'ts'}}
     },
-    rxjs: {
-      defaultExtension: 'js'
-    }
+    'rxjs': {main: 'index.js', defaultExtension: 'js' },
+    'rxjs/operators': {main: 'index.js', defaultExtension: 'js' }
   },
   transpiler: 'ts',
   typescriptOptions: {
