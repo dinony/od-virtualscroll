@@ -7,10 +7,9 @@ import {
 
 import {
   animationFrameScheduler as animationScheduler,
-  combineLatest, concat, empty, fromEvent,
-  merge, Observable, Subject, Subscription, of,
-  from,
-  ConnectableObservable
+  combineLatest, concat, ConnectableObservable,
+  empty, from, fromEvent, merge, Observable, of,
+  Subject, Subscription
 } from 'rxjs'
 
 import {
@@ -23,8 +22,8 @@ import {IVirtualScrollOptions, IVirtualScrollState} from './basic'
 import {IVirtualScrollMeasurement, IVirtualScrollWindow} from './basic'
 import {
   CmdOption, CreateItemCmd, CreateRowCmd,
-  NoopCmd,  RemoveItemCmd, RemoveRowCmd,
-  ShiftRowCmd, UpdateItemCmd, ICmd
+  ICmd, NoopCmd,  RemoveItemCmd, RemoveRowCmd,
+  ShiftRowCmd, UpdateItemCmd
 } from './cmd'
 import {forColumnsIn, forColumnsInWithPrev, forRowsIn} from './enumerate'
 import {calcMeasure, calcScrollWindow, getMaxIndex} from './measurement'
