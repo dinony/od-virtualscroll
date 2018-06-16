@@ -71,7 +71,7 @@ export class AppModule {}
 
 // app.component.ts
 import {Component} from '@angular/core';
-import {Observable} from 'rxjs/Observable';
+import {Observable} from 'rxjs';
 import {IVirtualScrollOptions} from 'od-virtualscroll';
 
 @Component({
@@ -132,7 +132,7 @@ E.g. Focus row index 42.
 
 ```typescript
 data$ = // Data...;
-userCmd$ = Observable.of(new FocusRowCmd(42)).delay(2000);
+userCmd$ = of(new FocusRowCmd(42)).delay(2000);
 ```
 
 ```html
@@ -208,6 +208,10 @@ See [Angular Package Format v4.0](https://docs.google.com/document/d/1CZC2rcpxff
 ES5/UMD, ES5/ES2015 and ES2015/ES2015 exports are also provided.
 
 ## Upgrade
+
+### 1.0.x -> 1.1.x
+
+1.1.x uses Angular6/RxJS6.
 
 ### 0.2.x -> 1.x
 
