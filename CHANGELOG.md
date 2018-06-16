@@ -1,5 +1,9 @@
 # Changelog
 
+# 1.1.0 (2018-06-16)
+
+* Angular6/RxJS6 upgrade
+
 # 1.0.2 (2017-12-02)
 
 * Fixes issue [#6](https://github.com/dinony/od-virtualscroll/pull/6)
