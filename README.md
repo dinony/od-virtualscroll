@@ -133,7 +133,7 @@ E.g. Focus row index 42.
 
 ```typescript
 data$ = // Data...;
-userCmd$ = of(new FocusRowCmd(42)).delay(2000);
+userCmd$ = of(new FocusRowCmd(42)).pipe(delay(2000));
 ```
 
 ```html
