@@ -5,6 +5,14 @@
 
 > Observable-based virtual scroll implementation in Angular.
 
+## Support
+
+od-virtualscroll is a MIT-licensed open source project. If you want to support the maintenance and implementation of [additional features](https://github.com/dinony/od-virtualscroll/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement) please consider a donation: 
+
+<a href="https://www.paypal.me/dinonysus" target="_blank">
+  <img src="https://www.paypalobjects.com/webstatic/de_DE/i/de-pp-logo-100px.png" border="0" alt="PayPal Logo"/>
+</a>
+
 ## Installation
 
 ```
