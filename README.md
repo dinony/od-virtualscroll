@@ -13,6 +13,12 @@ od-virtualscroll is a MIT-licensed open source project. If you want to support t
   <img src="https://www.paypalobjects.com/webstatic/de_DE/i/de-pp-logo-100px.png" border="0" alt="PayPal Logo"/>
 </a>
 
+### Company Donations 
+
+If you want to donate as a company, I can issue an invoice for open source software development for donations of at least 500€ (EUR). The invoice will be issued from my company in Austria, which is registered for value added tax (VAT). 
+
+contact@dinony.com
+
 ## Installation
 
 ```
